@@ -254,3 +254,35 @@ insert into customer (customer_id, customer_name, month_payment, discount)
 values (2,'Dandi', 10, 2);
 
 select * from customer;
+
+
+-- OPERATOR
+
+create table arimatika (
+    id integer primary key,
+    result real
+);
+
+insert into arimatika values (1,10%2);
+insert into arimatika values (2,10+2);
+insert into arimatika values (3,10-2);
+insert into arimatika values (4,10*2);
+insert into arimatika values (8,|/25);
+insert into arimatika values (5,10/2);
+insert into arimatika values (6,10^2);
+insert into arimatika values (7,10!);
+
+select * from arimatika;
+select * from tb_cashier where age > 19 AND salary < '2000000000';
+select * from tb_cashier where age > 19 OR salary < '2000000000';
+select * from tb_cashier where name like 'S%';
+select * from tb_cashier where name like '%v';
+select * from tb_cashier where name like '%e%';
+select * from tb_cashier where name like '_ammidev%';
+select * from tb_cashier where name like 'S_%_%_%_%_%_%_%_';
+select * from tb_cashier where age in (19,20,34);
+select * from tb_cashier where age between 19 and 100;
+select * from tb_cashier limit 5;
+select * from tb_cashier limit 2;
+select * from tb_cashier limit 4 offset 2;
+
