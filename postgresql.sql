@@ -126,3 +126,131 @@ values(2, '{
 }');
 
 select * from json_sample;
+
+
+
+
+create database db_learn;
+drop database db_learn;
+
+create table barang(
+    id_barang integer primary key,
+    nama_barang character(50),
+    harga_barang money
+);
+
+insert into barang(id_barang,nama_barang,harga_barang) values (1,'oppo find x', 200);
+update barang set harga_barang = 20000 where id_barang = 1;
+create table pemesanan(
+    id_pemesanan integer primary key,
+    total_pemesanan integer,
+    id_barang integer references barang(id_barang)
+);
+
+insert into pemesanan(id_pemesanan, total_pemesanan, id_barang) VALUES (1,200,1);
+select  * from pemesanan;
+drop table pemesanan;
+
+
+create table pemesanan(
+    id_pemesanan integer primary key,
+    nama_pemesan character(40)
+);
+
+create table details_pemesanan(
+    id_pemesanan integer references pemesanan(id_pemesanan),
+    id_barang integer references barang(id_barang),
+    total_pemesanan integer,
+    primary key(id_pemesanan, id_barang)
+);
+
+insert into barang(id_barang,nama_barang,harga_barang) values (2,'samsung s10 ultra', 300);
+insert into pemesanan(id_pemesanan, nama_pemesan) VALUES (1,'Sammidev');
+insert into details_pemesanan(id_pemesanan, id_barang, total_pemesanan) VALUES (1,2,100);
+select * from details_pemesanan;
+drop table details_pemesanan;
+create table details_pemesanan(
+    id_pemesanan integer references pemesanan(id_pemesanan) on delete cascade ,
+    id_barang integer references barang(id_barang) on delete restrict,
+    total_pemesanan integer,
+    primary key(id_pemesanan, id_barang)
+);
+
+-- restrict
+-- on delete restrict = stock barang terakhir tidak bisa habis ketika pemesanan telah terjadi
+-- on delete cascade  = hapus satu relasi
+
+insert into details_pemesanan(id_pemesanan, id_barang, total_pemesanan) VALUES (1,2,230);
+
+delete from barang WHERE id_barang = 2;
+-- ON DELETE RESTRICT =  maka akan gagal karena telah dipesan oleh detals pemesanan
+select * from details_pemesanan;
+
+
+
+insert into barang(id_barang, nama_barang) VALUES (3,'Laptop');
+insert into pemesanan(id_pemesanan, nama_pemesan) VALUES (3,'Aditya andika putra');
+insert into details_pemesanan(id_pemesanan, id_barang, total_pemesanan) VALUES (3,3,100);
+select * from details_pemesanan;
+-- ON DELETE CASCADE =  dihapus details itu
+delete from pemesanan WHERE id_pemesanan = 3;
+select * from details_pemesanan;
+
+
+
+
+create table tb_cashier(
+    id_cashier integer primary key,
+    name character(20),
+    age smallint,
+    address text,
+    salary money
+);
+
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(1,'Sammidev1',19,'Lapau Durian, Tinggam',5000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(2,'Sammidev2',20,'Lapau Durian, Tinggam',1000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(3,'Sammidev3',21,'Lapau Durian, Tinggam',2000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(4,'Sammidev4',13,'Lapau Durian, Tinggam',3000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(5,'Sammidev5',19,'Lapau Durian, Tinggam',4000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(6,'Sammidev6',19,'Lapau Durian, Tinggam',5000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(7,'Sammidev7',15,'Lapau Durian, Tinggam',6000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(8,'Sammidev8',19,'Lapau Durian, Tinggam',7000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(9,'Sammidev9',19,'Lapau Durian, Tinggam',8000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(10,'Sammidev10',19,'Lapau Durian, Tinggam',10000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(11,'Sammidev11',19,'Lapau Durian, Tinggam',12000000000);
+insert into tb_cashier(id_cashier, name, age, address, salary) VALUES(12,'Sammidev12',19,'Lapau Durian, Tinggam',32000000000);
+
+select  * from tb_cashier;
+
+select name, age from tb_cashier where age = 19;
+select * from tb_cashier where age > 15;
+select * from tb_cashier where age >= 15;
+select name, age from tb_cashier where age < 15;
+select name, age from tb_cashier where age <= 15;
+
+-- tidak sama dengan
+select name, age from tb_cashier where name != 'Sammidev2';
+select name, age from tb_cashier where name <> 'Sammidev2';
+
+-- order by asc desc
+select name,salary from tb_cashier order by salary;
+select name,salary from tb_cashier order by salary desc;
+
+
+-- check constraint
+create table customer(
+    customer_id integer primary key,
+    customer_name character(50),
+    month_payment numeric check (month_payment > 1),
+    discount numeric check (discount > 1),
+    check ( month_payment > discount )
+);
+
+-- failed
+insert into customer (customer_id, customer_name, month_payment, discount)
+values (1,'Sammidev', 10, 120);
+-- success
+insert into customer (customer_id, customer_name, month_payment, discount)
+values (2,'Dandi', 10, 2);
+
+select * from customer;
