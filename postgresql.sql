@@ -286,3 +286,154 @@ select * from tb_cashier limit 5;
 select * from tb_cashier limit 2;
 select * from tb_cashier limit 4 offset 2;
 
+
+
+drop table student;
+create table student (
+    student_id integer primary key,
+    student_name character(50),
+    nim character(10) unique,
+    created_at date
+);
+
+
+insert into student(student_id, student_name, nim, created_at) values(8,'Sammi Aldhi Yanto','2003113941', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(2,'Aditya Andika Putra','2003113942', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(3,'Dandi Arnanda','2003113943', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(4,'Gusnur','2003113944', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(5,'Ayatullah Ramadhan Jacoeb','2003113945', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(6,'Abdul Rauf','2003113946', '2020-10-10');
+insert into student(student_id, student_name, nim, created_at) values(7,'Aditya Fauzan Nul Haq','2003113947', '2020-10-10');
+
+select * from student;
+explain select * from student where nim = '2003113928';
+
+-- make index
+create index idx_nim on student(nim);
+explain select * from student where nim = '2003113928';
+
+-- make a view
+create view view_student as select student_name,nim from student;
+select * from view_student;
+
+-- union
+create table status(
+    id_status integer primary key,
+    status text
+);
+
+insert into status (id_status, status) values (1, 'ONLINE');
+insert into status (id_status, status) values (2, 'LAST SEEN');
+
+alter table student add column id_status integer references status(id_status);
+select * from student;
+
+
+insert into student(student_id, student_name, nim, created_at,id_status) values(10,'Otong Surotong','2003113989', '2020-10-10',1);
+select * from student;
+update student SET id_status = '1' where nim = '2003113941';
+select * from student;
+
+update student SET id_status = '2' where student_id < '8' AND student_id > '0';
+select * from student;
+
+
+select p.student_name, s.status
+from student as p
+left outer join status as s
+on p.id_status = s.id_status
+
+union all
+
+select p.student_name, s.status
+from student as p
+right outer join status as s
+on p.id_status = s.id_status;
+
+
+select p.student_name, s.status
+from student as p
+left outer join status as s
+on p.id_status = s.id_status
+
+union
+
+select p.student_name, s.status
+from student as p
+right outer join status as s
+on p.id_status = s.id_status;
+
+
+
+alter table student add column age smallint;
+update student SET age = '19' where student_id > '0';
+
+select * from student;
+
+--  sub query select
+select student_name, student.age from student
+where age in (select age from student where student.age > '15');
+
+drop table dosen_pembimbing;
+create table dosen_pembimbing (
+    lecture_id integer primary key,
+    lecture_name character(30),
+    nip character(10) unique ,
+    created_at date,
+    id_status integer,
+    age integer
+);
+
+--  sub query insert
+insert into dosen_pembimbing select * from student
+where nim in (select nim from student where student_id > '3');
+
+select * from dosen_pembimbing;
+
+--  sub query update
+update student set student_id = student_id * 5 where student_id in (select student_id from student where student_id > '5');
+select * from student;
+
+--  sub query delete
+update student set  age = 14 where student_id = '2';
+delete from student where student.age in (select student.age where student.age < '19');
+select * from student;
+
+
+-- create array
+create table tb_data_student (
+    id_student integer primary key,
+    nama text,
+    age smallint[],
+    nim smallint[][]
+);
+
+select * from tb_data_student;
+
+insert into tb_data_student values (1,'Sammidev','{12,19,20}', '{{12},{13}}');
+insert into tb_data_student values (2,'Aditya','{13,14,25}', '{{14},{11}}');
+insert into tb_data_student values (3,'Aditya','{13,14,25}', '{{14},{11}}');
+select * from tb_data_student;
+
+select nama,age[1] from tb_data_student;
+select nama,age[2] from tb_data_student;
+select nama,age from tb_data_student where age[1] = age[2];
+alter table tb_data_student add column kelas integer[][];
+select array_dims(age) from tb_data_student;
+select array_dims(kelas) from tb_data_student;
+
+select * from tb_data_student;
+update tb_data_student SET age = '{1,1,1}' where nama = 'Aditya';
+select * from tb_data_student;
+
+update tb_data_student SET age [2] = '1000' where nama = 'Aditya';
+select * from tb_data_student;
+
+update tb_data_student set age = array_append(age,'12');
+select * from tb_data_student;
+
+update tb_data_student set age = array_remove(age, '1');
+select * from tb_data_student;
+
+select * from tb_data_student where age[1] = '12' or age[2] = '2';
+
