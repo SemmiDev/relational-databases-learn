@@ -437,3 +437,75 @@ select * from tb_data_student;
 
 select * from tb_data_student where age[1] = '12' or age[2] = '2';
 
+-- latihan
+create database training_postgres;
+
+create table tb_mahasiswa(
+    id_mahasiswa bigint primary key,
+    nama character(50),
+    nim character(10) unique,
+    kelas character(1),
+    created_at date,
+    updated_at date
+);
+
+create index idx_nama on tb_mahasiswa(nama);
+create type jenis_kelamin as enum ('laki-laki','perempuan');
+create type agama as enum ('islam','kristen','buddha','konghucu','hindu');
+
+create table tb_details_mahasiswa (
+    id_details bigint primary key,
+    id_mahasiswa bigint references tb_mahasiswa(id_mahasiswa) on delete cascade,
+    nik character(16) unique,
+    tanggal_lahir date,
+    jenis_kelamin jenis_kelamin,
+    agama agama,
+    alamat character(30),
+    desa character(30),
+    kabupaten character(30),
+    provinsi character(30)
+);
+
+create table tb_details_study (
+    id_study integer primary key,
+    id_mahasiswa bigint references tb_mahasiswa(id_mahasiswa) on delete cascade,
+    semester smallint check (semester > 0),
+    nama_prodi character(30),
+    nama_kelas character(1),
+    nama_jurusan character(30),
+    nama_fakultas character(30),
+    ukt money
+);
+
+create table tb_matkul(
+    id_matkul bigint primary key,
+    id_mahasiswa bigint references tb_mahasiswa(id_mahasiswa) on delete cascade,
+    matkul_wajib character(30)[],
+    matkul_peminatan character(30)[],
+    skills character(30)[]
+);
+
+create table tb_dosen_pembimbing(
+    id_dosen_pembimbing bigint primary key,
+    id_mahasiswa bigint references tb_mahasiswa(id_mahasiswa) on delete cascade,
+    nama_dosen character(30),
+    nip_dosen character(10),
+    keahlian_dosen character(30)[]
+);
+
+
+insert into tb_mahasiswa values (1,'Sammi Aldhi Yanto','1234567890','A','2020-12-12', '2020-12-12');
+insert into tb_details_mahasiswa values (1,1,'1111111111111111','2010-10-20','laki-laki','islam','Lapau Durian','Tinggam','Pasaman Barat','Sumatera Barat');
+insert into tb_details_study values (1,1,1,'Sistem informasi','A','Ilmu komputer','FMIPA',100000);
+insert into tb_matkul values (1,1,'{A}','{A,B,C,D,E}', '{A,B}');
+insert into tb_dosen_pembimbing values (1,1,'Sukamto','1111111111','{Machine Leaning}');
+
+delete from tb_matkul where id_matkul = '1';
+delete from tb_mahasiswa where id_mahasiswa = '1';
+select * from tb_matkul;
+
+select * from tb_mahasiswa;
+select * from tb_details_mahasiswa;
+select * from tb_details_study;
+select * from tb_matkul;
+select * from tb_dosen_pembimbing;
