@@ -509,3 +509,164 @@ select * from tb_details_mahasiswa;
 select * from tb_details_study;
 select * from tb_matkul;
 select * from tb_dosen_pembimbing;
+
+
+
+-- create prodecure
+
+create database stuff;
+create table tb_barang(
+  id_barang integer primary key,
+  nama_barang character(30)
+);
+
+create table pemesanan(
+    id_pemesanan integer primary key,
+    total_pemesanan integer,
+    id_barang integer references tb_barang(id_barang)
+);
+
+insert into tb_barang values (1,'Laptop');
+insert into tb_barang values (2,'HP');
+insert into pemesanan values (1,12,1);
+
+create or replace procedure pemesanan_baru(a integer, b integer, c integer)
+language sql
+as $$
+insert into pemesanan values (a,b,c);
+$$;
+
+create or replace procedure hapus_pemesanan(id integer)
+language sql
+as $$
+delete from pemesanan where pemesanan.id_pemesanan = id
+$$;
+
+
+-- panggil procedure
+call pemesanan_baru(2,200,2);
+call pemesanan_baru(3,200,1);
+select * from pemesanan;
+call hapus_pemesanan(2);
+select * from pemesanan;
+
+
+-- function
+create or replace function total_pemesanan ()
+returns integer as $jumlah$
+declare
+    jumlah integer;
+begin
+    select count(*) into jumlah from pemesanan;
+    return jumlah;
+end;
+$jumlah$ language plpgsql;
+
+select total_pemesanan();
+
+-- increment
+create or replace function increment(angka integer)
+returns integer as $inc$
+begin
+    return angka+1;
+end
+$inc$ language plpgsql;
+
+select increment(22);
+select increment(24);
+select increment(0);
+
+-- adding
+create or replace function adding(angka1 integer, angka2 integer)
+returns integer as $inc$
+begin
+    return angka1 + angka2;
+end
+$inc$ language plpgsql;
+
+select adding(1,2);
+
+-- multiply
+create or replace function multiply(angka1 integer, angka2 integer)
+returns integer as $inc$
+begin
+    return angka1 * angka2;
+end
+$inc$ language plpgsql;
+
+select adding(1,2);
+
+-- divide
+create or replace function divide(angka1 integer, angka2 integer)
+returns integer as $inc$
+begin
+    return angka1 / angka2;
+end
+$inc$ language plpgsql;
+
+select adding(1,2);
+select multiply(1,2);
+select divide(1,2);
+
+-- IN = default function (inputan)
+-- OUT = variables output
+create function minmax(a integer, b integer, c integer, OUT min integer, OUT max integer)
+as $mm$
+begin
+    min = least(a,b,c);
+    max = greatest(a,b,c);
+end;
+$mm$ language plpgsql;
+
+select minmax(2,4,3);
+select minmax(1000,12,900);
+
+
+create or replace function sqrt(inout a integer)
+as $jumlah$
+begin
+    a = a * a;
+end;
+$jumlah$ language plpgsql;
+
+select sqrt(10);
+
+-- if
+
+do $$
+declare
+no1 integer = 100;
+no2 integer = 100;
+begin
+    if no1 > no2 then
+        raise notice 'FIRST NUMBER';
+    elseif no2 > no1 then
+        raise notice 'SECOND NUMBER';
+    else
+        raise notice 'equal';
+    end if;
+end $$;
+
+-- for
+
+create or replace function fibo(n integer)
+returns integer as $$
+declare
+    counter integer = 0;
+    i integer = 0;
+    j integer = 1;
+begin
+    if (n < 1) then
+        return 0;
+    end if;
+
+    loop
+        exit when counter = n;
+        counter = counter + 1;
+        select j, i+j into i,j;
+    end loop;
+
+    return i;
+end $$ language plpgsql;
+
+select fibo(23);
